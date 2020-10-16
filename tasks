@@ -1,0 +1,51 @@
+#!/bin/bash
+
+set -Eeo pipefail
+
+stack_name=mesh-client
+tf_dir=terraform
+
+function tf_init {
+    directory=$1
+    stack_env=$2
+    terraform init -backend-config key=${stack_env}/${stack_name}/terraform.tfstate ${directory}
+}
+
+if [ "$#" -ne 2 ]; then
+    echo "Usage: $0 TASK STACK-ENVIRONMENT"
+    exit 1
+fi
+
+task="$1"
+stack_env="$2"
+
+echo "--- ${task} ---"
+case "${task}" in
+    validate)
+        tf_init ${tf_dir} ${stack_env}
+        terraform validate ${tf_dir}
+    ;;
+    dojo-validate)
+        dojo "./tasks validate ${stack_env}"
+    ;;
+    plan)
+        tf_init ${tf_dir} ${stack_env}
+        terraform plan -var environment=${stack_env} -out=${stack_env}.tfplan ${tf_dir}
+    ;;
+    dojo-plan)
+        dojo "./tasks plan ${stack_env}"
+    ;;
+    apply)
+        tf_init ${tf_dir} ${stack_env}
+        terraform apply ${stack_env}.tfplan
+    ;;
+    dojo-apply)
+        dojo "./tasks apply ${stack_env}"
+    ;;
+    *)
+        echo "Invalid task: '${task}'"
+        exit 1
+    ;;
+esac
+
+set +e
