@@ -57,7 +57,7 @@ resource "aws_iam_role_policy_attachment" "mesh_client_session_manager" {
 
 }
 
-resource "aws_iam_role_policy_attachment" "mesh_client_session_manager" {
+resource "aws_iam_role_policy_attachment" "mesh_client_ecr_read_only" {
   role       = aws_iam_role.mesh_client.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
 }
