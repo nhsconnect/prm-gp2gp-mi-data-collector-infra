@@ -57,6 +57,10 @@ resource "aws_iam_role_policy_attachment" "mesh_client_session_manager" {
 
 }
 
+resource "aws_iam_role_policy_attachment" "mesh_client_session_manager" {
+  role       = aws_iam_role.mesh_client.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+}
 
 resource "aws_instance" "mesh_client" {
   ami                         = data.aws_ami.amazon_linux_2.image_id
