@@ -38,8 +38,12 @@ case "${task}" in
         dojo "./tasks validate ${stack_env}"
     ;;
     plan)
-        tf_init ${tf_dir} ${stack_env}
-        terraform plan -var environment=${stack_env} -out=${stack_env}.tfplan ${tf_dir}
+        tf_init ${tf_dir} ${stack_env} 
+        terraform plan \
+          -var environment=${stack_env} \
+          -var-file=${stack_env}.tfvars \
+          -out=${stack_env}.tfplan \
+          ${tf_dir}
     ;;
     dojo-plan)
         dojo "./tasks plan ${stack_env}"

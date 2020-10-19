@@ -24,5 +24,4 @@ variable "region" {
 variable "vpc_cidr" {
   type        = string
   description = "CIDR block to assign VPC"
-  default     = "10.50.0.0/16"
 }
