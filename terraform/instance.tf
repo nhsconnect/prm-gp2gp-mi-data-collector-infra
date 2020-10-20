@@ -54,12 +54,11 @@ resource "aws_iam_instance_profile" "mesh_client" {
 resource "aws_iam_role_policy_attachment" "mesh_client_session_manager" {
   role       = aws_iam_role.mesh_client.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
-
 }
 
-resource "aws_iam_role_policy_attachment" "mesh_client_ecr_read_only" {
+resource "aws_iam_role_policy_attachment" "ecs_agent" {
   role       = aws_iam_role.mesh_client.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+  policy_arn = aws_iam_policy.ecs_agent.arn
 }
 
 resource "aws_instance" "mesh_client" {
