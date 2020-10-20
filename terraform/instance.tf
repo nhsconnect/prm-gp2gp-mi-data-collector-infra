@@ -69,7 +69,7 @@ resource "aws_instance" "mesh_client" {
   subnet_id                   = aws_subnet.public.id
   iam_instance_profile        = aws_iam_instance_profile.mesh_client.name
   associate_public_ip_address = true
-  user_data                   = templatefile("${path.module}/user-data.sh.tmpl", { cluster_name = aws_ecs_cluster.mi_data_collector.id })
+  user_data                   = templatefile("${path.module}/user-data.sh.tmpl", { cluster_name = aws_ecs_cluster.mi_data_collector.name })
 
   tags = merge(
     local.common_tags,
