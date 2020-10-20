@@ -4,7 +4,7 @@ data "aws_ami" "amazon_linux_2" {
 
   filter {
     name   = "name"
-    values = ["amzn2-ami-hvm-2.0.*-x86_64-gp2"]
+    values = ["amzn2-ami-ecs-hvm-2.0.*-x86_64-ebs"]
   }
 }
 
@@ -69,7 +69,7 @@ resource "aws_instance" "mesh_client" {
   subnet_id                   = aws_subnet.public.id
   iam_instance_profile        = aws_iam_instance_profile.mesh_client.name
   associate_public_ip_address = true
-  user_data                   = file("${path.module}/user-data.sh")
+  user_data                   = templatefile("${path.module}/user-data.sh.tmpl", { cluster_name = aws_ecs_cluster.mi_data_collector.id })
 
   tags = merge(
     local.common_tags,
