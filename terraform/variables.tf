@@ -11,7 +11,7 @@ variable "team" {
 
 variable "repo_name" {
   type        = string
-  default     = "prm-gp2gp-docker-mesh-client"
+  default     = "prm-gp2gp-mi-data-collector-infra"
   description = "Name of this repository"
 }
 
