@@ -61,6 +61,11 @@ resource "aws_iam_role_policy_attachment" "ecs_agent" {
   policy_arn = aws_iam_policy.ecs_agent.arn
 }
 
+resource "aws_iam_role_policy_attachment" "data_bucket_access" {
+  role       = aws_iam_role.mesh_client.name
+  policy_arn = aws_iam_policy.data_bucket_access.arn
+}
+
 resource "aws_instance" "mesh_client" {
   ami                         = data.aws_ami.amazon_linux_2.image_id
   instance_type               = "t3a.small"
