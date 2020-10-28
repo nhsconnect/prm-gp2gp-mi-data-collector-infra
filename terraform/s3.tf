@@ -49,3 +49,8 @@ resource "aws_iam_policy" "data_bucket_access" {
   name   = "${aws_s3_bucket.mi_data.bucket}-bucket-access"
   policy = data.aws_iam_policy_document.data_bucket_access.json
 }
+
+resource "aws_s3_bucket_metric" "data_bucket_metrics" {
+  bucket = aws_s3_bucket.mi_data.bucket
+  name   = "EntireBucket"
+}
