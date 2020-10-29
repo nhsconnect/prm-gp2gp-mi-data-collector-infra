@@ -28,6 +28,8 @@ pipelines:
               artifacts:
                 - build:
                     source: dev.tfplan
+                - build:
+                    source: terraform/datacanary.zip
               tasks:
                 - exec:
                     command: /bin/bash
@@ -46,6 +48,11 @@ pipelines:
                     job: plan
                     source: dev.tfplan
                     is_file: yes
+                - fetch:
+                    stage: plan_dev
+                    job: plan
+                    source: terraform/datacanary.zip
+                    is_file: yes
                 - exec:
                     command: /bin/bash
                     arguments:
@@ -60,6 +67,8 @@ pipelines:
               artifacts:
                 - build:
                     source: prod.tfplan
+                - build:
+                    source: terraform/datacanary.zip
               tasks:
                 - exec:
                     command: /bin/bash
@@ -80,6 +89,11 @@ pipelines:
                     stage: plan_prod
                     job: plan
                     source: prod.tfplan
+                    is_file: yes
+                - fetch:
+                    stage: plan_prod
+                    job: plan
+                    source: terraform/datacanary.zip
                     is_file: yes
                 - exec:
                     command: /bin/bash
