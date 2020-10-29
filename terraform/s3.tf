@@ -2,12 +2,12 @@ resource "aws_s3_bucket" "mi_data" {
   bucket = "prm-gp2gp-mi-data-${var.environment}"
   acl    = "private"
 
-  tags = {
-    Name        = "GP2GP MI data"
-    CreatedBy   = var.repo_name
-    Environment = var.environment
-    Team        = var.team
-  }
+  tags = merge(
+    local.common_tags,
+    {
+      Name = "${var.environment}-GP2GP-MI-data"
+    }
+  )
 }
 
 resource "aws_s3_bucket_public_access_block" "mi_data" {
@@ -48,6 +48,7 @@ data "aws_iam_policy_document" "data_bucket_access" {
 resource "aws_iam_policy" "data_bucket_access" {
   name   = "${aws_s3_bucket.mi_data.bucket}-bucket-access"
   policy = data.aws_iam_policy_document.data_bucket_access.json
+  tags = local.common_tags
 }
 
 resource "aws_s3_bucket_metric" "data_bucket_metrics" {
