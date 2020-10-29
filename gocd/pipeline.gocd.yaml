@@ -30,6 +30,7 @@ pipelines:
                     source: dev.tfplan
                 - build:
                     source: terraform/datacanary.zip
+                    destination: terraform/
               tasks:
                 - exec:
                     command: /bin/bash
@@ -69,6 +70,7 @@ pipelines:
                     source: prod.tfplan
                 - build:
                     source: terraform/datacanary.zip
+                    destination: terraform/
               tasks:
                 - exec:
                     command: /bin/bash
