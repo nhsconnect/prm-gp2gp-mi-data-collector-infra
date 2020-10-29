@@ -68,7 +68,7 @@ def generate_message(count, bucket_name):
     )
   else:
     return (
-      f"Succesful data canary: {bucket_name}",
+      f"Successful data canary: {bucket_name}",
       f"There have been {count} objects added to bucket {bucket_name} in the last seven days"
     )
 
