@@ -67,7 +67,7 @@ resource "aws_lambda_function" "mi_data_collector_canary" {
   handler       = "datacanary.monitor_object_puts"
   tags = local.common_tags
 
-  source_code_hash = filebase64sha256(data.archive_file.mi_data_collector_canary.output_path)
+  source_code_hash = data.archive_file.mi_data_collector_canary.output_base64sha256
 
   runtime = "python3.8"
 
@@ -77,4 +77,27 @@ resource "aws_lambda_function" "mi_data_collector_canary" {
       sns_topic_arn = aws_sns_topic.mi_data_collector_canary.arn
     }
   }
+}
+
+resource "aws_cloudwatch_event_rule" "run_daily" {
+  name        = "${var.environment}-mi-data-collector-canary"
+  description = "Trigger MI Data Canary"
+
+  schedule_expression = "cron(0 10 * * ? *)"
+  tags = local.common_tags
+}
+
+resource "aws_cloudwatch_event_target" "mi_data_collector_canary" {
+  target_id = "${var.environment}-mi-data-collector-canary"
+  rule      = aws_cloudwatch_event_rule.run_daily.name
+  arn       = aws_lambda_function.mi_data_collector_canary.arn
+}
+
+
+resource "aws_lambda_permission" "invoke_canary" {
+  statement_id  = "AllowExecutionFromCloudWatch"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.mi_data_collector_canary.function_name
+  principal     = "events.amazonaws.com"
+  source_arn    = aws_cloudwatch_event_rule.run_daily.arn
 }
