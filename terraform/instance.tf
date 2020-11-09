@@ -66,6 +66,11 @@ resource "aws_iam_role_policy_attachment" "data_bucket_access" {
   policy_arn = aws_iam_policy.data_bucket_access.arn
 }
 
+resource "aws_iam_role_policy_attachment" "data_bucket_v2_access" {
+  role       = aws_iam_role.mesh_client.name
+  policy_arn = aws_iam_policy.data_bucket_v2_access.arn
+}
+
 resource "aws_instance" "mesh_client" {
   ami                         = "ami-07d7061189d56c1eb" // Hardcode AMI until container deployment is automated
   instance_type               = "t3a.small"
