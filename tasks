@@ -55,6 +55,9 @@ case "${task}" in
     dojo-apply)
         dojo "./tasks apply ${stack_env}"
     ;;
+    format)
+        terraform fmt terraform
+    ;;
     *)
         echo "Invalid task: '${task}'"
         exit 1
