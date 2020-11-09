@@ -67,7 +67,7 @@ resource "aws_iam_role_policy_attachment" "data_bucket_access" {
 }
 
 resource "aws_instance" "mesh_client" {
-  ami                         = data.aws_ami.amazon_linux_2.image_id
+  ami                         = "ami-07d7061189d56c1eb" // Hardcode AMI until container deployment is automated
   instance_type               = "t3a.small"
   vpc_security_group_ids      = [aws_security_group.mesh_client.id]
   subnet_id                   = aws_subnet.public.id

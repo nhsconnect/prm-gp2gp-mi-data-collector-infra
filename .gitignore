@@ -1,2 +1,4 @@
 .terraform
 *.tfplan
+*.zip
+.DS_Store
