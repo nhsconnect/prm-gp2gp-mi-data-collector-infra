@@ -75,6 +75,10 @@ data "aws_iam_policy_document" "data_bucket_v2_notification" {
       variable = "aws:SourceArn"
       values   = [aws_s3_bucket.mi_data_v2.arn]
     }
+    principals {
+      type        = "Service"
+      identifiers = ["s3.amazonaws.com"]
+    }
   }
 
 }
