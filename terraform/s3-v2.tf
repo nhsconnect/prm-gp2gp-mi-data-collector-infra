@@ -105,20 +105,23 @@ data "aws_iam_policy_document" "data_bucket_v2_notification_sns" {
 
 resource "aws_sns_topic" "data_bucket_v2_notifications" {
   name = "${aws_s3_bucket.mi_data_v2.bucket}-notifications"
+  tags = local.common_tags
 }
 
 resource "aws_sns_topic_policy" "data_bucket_v2_notifications" {
-  arn = aws_sns_topic.data_bucket_v2_notifications.arn
+  arn    = aws_sns_topic.data_bucket_v2_notifications.arn
   policy = data.aws_iam_policy_document.data_bucket_v2_notification_sns.json
 }
 
 resource "aws_sqs_queue" "data_bucket_v2_notifications" {
-  name   = "${aws_s3_bucket.mi_data_v2.bucket}-notifications"
+  name                       = "${aws_s3_bucket.mi_data_v2.bucket}-notifications"
+  visibility_timeout_seconds = 300
+  tags                       = local.common_tags
 }
 
 resource "aws_sqs_queue_policy" "data_bucket_v2_notifications" {
   queue_url = aws_sqs_queue.data_bucket_v2_notifications.id
-  policy = data.aws_iam_policy_document.data_bucket_v2_notification_sqs.json
+  policy    = data.aws_iam_policy_document.data_bucket_v2_notification_sqs.json
 }
 
 resource "aws_sns_topic_subscription" "forward_sns_to_sqs" {

@@ -45,7 +45,7 @@ resource "aws_iam_policy" "mi_data_collector_canary" {
 }
 
 resource "aws_iam_role" "mi_data_collector_canary" {
-  name = "${var.environment}-mi-data-collector-canary"
+  name               = "${var.environment}-mi-data-collector-canary"
   assume_role_policy = data.aws_iam_policy_document.lambda_assume_role.json
 }
 
@@ -65,7 +65,7 @@ resource "aws_lambda_function" "mi_data_collector_canary" {
   function_name = "${var.environment}-mi-data-collector-canary"
   role          = aws_iam_role.mi_data_collector_canary.arn
   handler       = "datacanary.monitor_object_puts"
-  tags = local.common_tags
+  tags          = local.common_tags
 
   source_code_hash = data.archive_file.mi_data_collector_canary.output_base64sha256
 
@@ -73,7 +73,7 @@ resource "aws_lambda_function" "mi_data_collector_canary" {
 
   environment {
     variables = {
-      bucket_name = aws_s3_bucket.mi_data.bucket
+      bucket_name   = aws_s3_bucket.mi_data.bucket
       sns_topic_arn = aws_sns_topic.mi_data_collector_canary.arn
     }
   }
@@ -84,7 +84,7 @@ resource "aws_cloudwatch_event_rule" "run_daily" {
   description = "Trigger MI Data Canary"
 
   schedule_expression = "cron(0 10 * * ? *)"
-  tags = local.common_tags
+  tags                = local.common_tags
 }
 
 resource "aws_cloudwatch_event_target" "mi_data_collector_canary" {
