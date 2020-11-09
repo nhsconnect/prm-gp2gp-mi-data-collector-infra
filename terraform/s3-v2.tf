@@ -56,9 +56,27 @@ resource "aws_s3_bucket_metric" "data_bucket_v2_metrics" {
 
 }
 
-locals {
-  notifications_queue_name = "${aws_s3_bucket.mi_data_v2.bucket}-notifications"
-  notifications_topic_name = "${aws_s3_bucket.mi_data_v2.bucket}-notifications"
+data "aws_iam_policy_document" "data_bucket_v2_notification_sqs" {
+  statement {
+    actions = [
+      "sqs:SendMessage"
+    ]
+
+    resources = [
+      aws_sqs_queue.data_bucket_v2_notifications.arn,
+    ]
+
+    condition {
+      test     = "ArnEquals"
+      variable = "aws:SourceArn"
+      values   = [aws_sns_topic.data_bucket_v2_notifications.arn]
+    }
+    principals {
+      type        = "Service"
+      identifiers = ["sns.amazonaws.com"]
+    }
+  }
+
 }
 
 data "aws_iam_policy_document" "data_bucket_v2_notification_sns" {
@@ -68,7 +86,7 @@ data "aws_iam_policy_document" "data_bucket_v2_notification_sns" {
     ]
 
     resources = [
-      "arn:aws:sns:*:*:${local.notifications_topic_name}",
+      aws_sns_topic.data_bucket_v2_notifications.arn,
     ]
 
     condition {
@@ -86,12 +104,21 @@ data "aws_iam_policy_document" "data_bucket_v2_notification_sns" {
 }
 
 resource "aws_sns_topic" "data_bucket_v2_notifications" {
-  name = local.notifications_topic_name
+  name = "${aws_s3_bucket.mi_data_v2.bucket}-notifications"
+}
+
+resource "aws_sns_topic_policy" "data_bucket_v2_notifications" {
+  arn = aws_sns_topic.data_bucket_v2_notifications.arn
   policy = data.aws_iam_policy_document.data_bucket_v2_notification_sns.json
 }
 
 resource "aws_sqs_queue" "data_bucket_v2_notifications" {
-  name   = local.notifications_queue_name
+  name   = "${aws_s3_bucket.mi_data_v2.bucket}-notifications"
+}
+
+resource "aws_sqs_queue_policy" "data_bucket_v2_notifications" {
+  queue_url = aws_sqs_queue.data_bucket_v2_notifications.id
+  policy = data.aws_iam_policy_document.data_bucket_v2_notification_sqs.json
 }
 
 resource "aws_sns_topic_subscription" "forward_sns_to_sqs" {
