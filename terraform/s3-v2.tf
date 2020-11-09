@@ -53,4 +53,44 @@ resource "aws_iam_policy" "data_bucket_v2_access" {
 resource "aws_s3_bucket_metric" "data_bucket_v2_metrics" {
   bucket = aws_s3_bucket.mi_data_v2.bucket
   name   = "EntireBucket"
+
 }
+
+locals {
+  notifications_queue_name = "${aws_s3_bucket.mi_data_v2.bucket}-notifications"
+}
+
+data "aws_iam_policy_document" "data_bucket_v2_notification" {
+  statement {
+    actions = [
+      "sqs:SendMessage"
+    ]
+
+    resources = [
+      "arn:aws:sqs:*:*:${local.notifications_queue_name}",
+    ]
+
+    condition {
+      test     = "ArnEquals"
+      variable = "aws:SourceArn"
+      values   = [aws_s3_bucket.mi_data_v2.arn]
+    }
+  }
+
+}
+
+resource "aws_sqs_queue" "data_bucket_v2_notifications" {
+  name   = local.notifications_queue_name
+  policy = data.aws_iam_policy_document.data_bucket_v2_notification.json
+}
+
+
+resource "aws_s3_bucket_notification" "data_bucket_v2_notifications" {
+  bucket = aws_s3_bucket.mi_data_v2.id
+
+  queue {
+    queue_arn = aws_sqs_queue.data_bucket_v2_notifications.arn
+    events    = ["s3:ObjectCreated:*"]
+  }
+}
+
