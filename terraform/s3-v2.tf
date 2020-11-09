@@ -58,9 +58,10 @@ resource "aws_s3_bucket_metric" "data_bucket_v2_metrics" {
 
 locals {
   notifications_queue_name = "${aws_s3_bucket.mi_data_v2.bucket}-notifications"
+  notifications_topic_name = "${aws_s3_bucket.mi_data_v2.bucket}-notifications"
 }
 
-data "aws_iam_policy_document" "data_bucket_v2_notification" {
+data "aws_iam_policy_document" "data_bucket_v2_notification_sqs" {
   statement {
     actions = [
       "sqs:SendMessage"
@@ -83,17 +84,46 @@ data "aws_iam_policy_document" "data_bucket_v2_notification" {
 
 }
 
+data "aws_iam_policy_document" "data_bucket_v2_notification_sns" {
+  statement {
+    actions = [
+      "sns:Publish"
+    ]
+
+    resources = [
+      "arn:aws:sns:*:*:${local.notifications_topic_name}",
+    ]
+
+    condition {
+      test     = "ArnEquals"
+      variable = "aws:SourceArn"
+      values   = [aws_s3_bucket.mi_data_v2.arn]
+    }
+
+    principals {
+      type        = "Service"
+      identifiers = ["s3.amazonaws.com"]
+    }
+  }
+
+}
+
+resource "aws_sns_topic" "data_bucket_v2_notifications" {
+  name = local.notifications_topic_name
+  policy = data.aws_iam_policy_document.data_bucket_v2_notification_sns.json
+}
+
 resource "aws_sqs_queue" "data_bucket_v2_notifications" {
   name   = local.notifications_queue_name
-  policy = data.aws_iam_policy_document.data_bucket_v2_notification.json
+  policy = data.aws_iam_policy_document.data_bucket_v2_notification_sqs.json
 }
 
 
 resource "aws_s3_bucket_notification" "data_bucket_v2_notifications" {
   bucket = aws_s3_bucket.mi_data_v2.id
 
-  queue {
-    queue_arn = aws_sqs_queue.data_bucket_v2_notifications.arn
+  topic {
+    topic_arn = aws_sns_topic.data_bucket_v2_notifications.arn
     events    = ["s3:ObjectCreated:*"]
   }
 }
