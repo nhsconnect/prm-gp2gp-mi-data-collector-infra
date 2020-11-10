@@ -124,7 +124,7 @@ resource "aws_sqs_queue" "data_bucket_v2_notifications" {
 }
 
 resource "aws_sqs_queue" "data_bucket_v2_notifications_deadletter" {
-  name                       = "${aws_s3_bucket.mi_data_v2.bucket}-notifications-deadletter"
+  name = "${aws_s3_bucket.mi_data_v2.bucket}-notifications-deadletter"
   tags = local.common_tags
 }
 
@@ -164,4 +164,47 @@ resource "aws_iam_role" "splunk" {
   name               = "${var.environment}-registrations-splunk-mi-collector"
   description        = "Role for Splunk MI data collector"
   assume_role_policy = data.aws_iam_policy_document.splunk_assume_role.json
+}
+
+data "aws_iam_policy_document" "splunk_s3_collector" {
+
+  statement {
+    sid = "ListSQSQueus"
+    actions = [
+      "sqs:ListQueues"
+    ]
+    resources = ["*"]
+  }
+  statement {
+    sid = "ReadMIS3Objects"
+    actions = [
+      "s3:GetObject"
+    ]
+    resources = [
+      "arn:aws:s3:::${aws_s3_bucket.mi_data_v2.bucket}/*",
+    ]
+
+  }
+  statement {
+    sid = "ConsumeSQS"
+    actions = [
+      "sqs:GetQueueUrl",
+      "sqs:ReceiveMessage",
+      "sqs:DeleteMessage",
+      "sqs:GetQueueAttributes"
+    ]
+    resources = [
+      aws_sqs_queue.data_bucket_v2_notifications.arn
+    ]
+  }
+}
+
+resource "aws_iam_policy" "splunk_s3_collector" {
+  name   = "${aws_s3_bucket.mi_data_v2.bucket}-splunk-collector"
+  policy = data.aws_iam_policy_document.splunk_s3_collector.json
+}
+
+resource "aws_iam_role_policy_attachment" "splunk_s3_collector" {
+  role       = aws_iam_role.splunk.name
+  policy_arn = aws_iam_policy.splunk_s3_collector.arn
 }
