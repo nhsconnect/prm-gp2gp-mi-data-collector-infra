@@ -148,3 +148,20 @@ resource "aws_s3_bucket_notification" "data_bucket_v2_notifications" {
   }
 }
 
+data "aws_caller_identity" "current" {}
+
+data "aws_iam_policy_document" "splunk_assume_role" {
+  statement {
+    actions = ["sts:AssumeRole"]
+    principals {
+      type        = "AWS"
+      identifiers = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"]
+    }
+  }
+}
+
+resource "aws_iam_role" "splunk" {
+  name               = "${var.environment}-registrations-splunk-mi-collector"
+  description        = "Role for Splunk MI data collector"
+  assume_role_policy = data.aws_iam_policy_document.splunk_assume_role.json
+}
