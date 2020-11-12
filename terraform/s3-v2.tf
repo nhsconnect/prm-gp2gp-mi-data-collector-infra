@@ -156,14 +156,20 @@ resource "aws_s3_bucket_notification" "data_bucket_v2_notifications" {
   }
 }
 
-data "aws_caller_identity" "current" {}
+data "aws_ssm_parameter" "splunk_trusted_principals" {
+  name = "/registrations/${var.environment}/user-input/splunk-trusted-principals"
+}
+
+locals {
+  splunk_trusted_principals = split(",", data.aws_ssm_parameter.splunk_trusted_principals.value)
+}
 
 data "aws_iam_policy_document" "splunk_assume_role" {
   statement {
     actions = ["sts:AssumeRole"]
     principals {
       type        = "AWS"
-      identifiers = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"]
+      identifiers = local.splunk_trusted_principals
     }
   }
 }
