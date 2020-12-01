@@ -1,3 +1,8 @@
+resource "aws_ecs_cluster" "mi_data_collector" {
+  name = "${var.environment}-registrations-mi-collector"
+  tags = local.common_tags
+}
+
 data "aws_ecr_repository" "mesh_s3_forwarder" {
   name = var.forwarder_repo_name
 }
@@ -106,4 +111,12 @@ resource "aws_ecs_task_definition" "forwarder" {
     }
   )
   execution_role_arn = aws_iam_role.ecs_execution.arn
+}
+
+resource "aws_ecs_service" "forwarder" {
+  name            = "${var.environment}-mesh-s3-forwarder"
+  cluster         = aws_ecs_cluster.mi_data_collector.id
+  task_definition = aws_ecs_task_definition.forwarder.arn
+  launch_type = "FARGATE"
+  desired_count   = 1
 }
