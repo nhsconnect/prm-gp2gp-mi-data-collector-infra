@@ -80,7 +80,7 @@ resource "aws_ecs_task_definition" "forwarder" {
         options = {
           awslogs-group         = aws_cloudwatch_log_group.mesh_s3_forwarder.name
           awslogs-region        = var.region
-          awslogs-stream-prefix = "${var.forwarder_repo_name}:${var.forwarder_image_tag}"
+          awslogs-stream-prefix = var.forwarder_image_tag
         }
       }
     }
