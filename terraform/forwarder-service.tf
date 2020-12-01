@@ -31,6 +31,16 @@ resource "aws_iam_role" "ecs_execution" {
   assume_role_policy = data.aws_iam_policy_document.ecs_execution_assume.json
 }
 
+resource "aws_iam_role_policy_attachment" "ecs_execution" {
+  role       = aws_iam_role.ecs_execution.name
+  policy_arn = aws_iam_policy.ecs_execution.arn
+}
+
+resource "aws_iam_policy" "ecs_execution" {
+  name   = "${var.environment}-ecs-execution"
+  policy = data.aws_iam_policy_document.ecs_execution.json
+}
+
 data "aws_iam_policy_document" "ecs_execution" {
   statement {
     sid = "GetEcrAuthToken"
