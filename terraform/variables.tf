@@ -12,7 +12,7 @@ variable "team" {
 variable "repo_name" {
   type        = string
   default     = "prm-gp2gp-mi-data-collector-infra"
-  description = "Name of this repository"
+  description = "Name of this git repository"
 }
 
 variable "region" {
@@ -24,4 +24,14 @@ variable "region" {
 variable "vpc_cidr" {
   type        = string
   description = "CIDR block to assign VPC"
+}
+
+variable "forwarder_repo_name" {
+  type        = string
+  description = "Docker repository of Mesh to S3 forwarder"
+}
+
+variable "forwarder_image_tag" {
+  type        = string
+  description = "Docker image tag of Mesh to S3 forwarder"
 }

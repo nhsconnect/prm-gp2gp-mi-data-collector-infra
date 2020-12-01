@@ -1,3 +1,31 @@
+data "aws_iam_policy_document" "ecs_agent" {
+  statement {
+    actions = [
+      "ec2:DescribeTags",
+      "ecs:CreateCluster",
+      "ecs:DeregisterContainerInstance",
+      "ecs:DiscoverPollEndpoint",
+      "ecs:Poll",
+      "ecs:RegisterContainerInstance",
+      "ecs:StartTelemetrySession",
+      "ecs:UpdateContainerInstancesState",
+      "ecs:Submit*",
+      "ecr:GetAuthorizationToken",
+      "ecr:BatchCheckLayerAvailability",
+      "ecr:GetDownloadUrlForLayer",
+      "ecr:BatchGetImage",
+      "logs:CreateLogStream",
+      "logs:PutLogEvents"
+    ]
+    resources = ["*"]
+  }
+}
+
+resource "aws_iam_policy" "ecs_agent" {
+  name   = "${aws_ecs_cluster.mi_data_collector.name}-agent"
+  policy = data.aws_iam_policy_document.ecs_agent.json
+}
+
 data "aws_ami" "amazon_linux_2" {
   owners      = ["amazon"]
   most_recent = true
