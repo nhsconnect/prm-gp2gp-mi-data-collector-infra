@@ -160,6 +160,7 @@ resource "aws_ecs_task_definition" "forwarder" {
     }
   )
   execution_role_arn = aws_iam_role.ecs_execution.arn
+  task_role_arn = aws_iam_role.forwarder.arn
 }
 
 resource "aws_ecs_service" "forwarder" {
