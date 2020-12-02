@@ -76,7 +76,7 @@ data "aws_iam_policy_document" "ecs_execution" {
       "logs:PutLogEvents"
     ]
     resources = [
-      "${aws_cloudwatch_log_group.mesh_s3_forwarder.arn}/*"
+      "${aws_cloudwatch_log_group.mesh_s3_forwarder.arn}:*"
     ]
   }
 }
