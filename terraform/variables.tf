@@ -35,3 +35,43 @@ variable "forwarder_image_tag" {
   type        = string
   description = "Docker image tag of Mesh to S3 forwarder"
 }
+
+variable "mesh_url" {
+  type        = string
+  description = "URL of MESH service"
+}
+
+variable "splunk_trusted_principal_ssm_param_name" {
+  type        = string
+  description = "Name of SSM parameter containing Splunk trusted principal"
+}
+
+variable "mesh_mailbox_ssm_param_name" {
+  type        = string
+  description = "Name of SSM parameter containing MESH mailbox name"
+}
+
+variable "mesh_password_ssm_param_name" {
+  type        = string
+  description = "Name of SSM parameter containing MESH mailbox password"
+}
+
+variable "mesh_shared_key_ssm_param_name" {
+  type        = string
+  description = "Name of SSM parameter containing MESH shared key"
+}
+
+variable "mesh_client_cert_ssm_param_name" {
+  type        = string
+  description = "Name of SSM parameter containing MESH client certificate"
+}
+
+variable "mesh_client_key_ssm_param_name" {
+  type        = string
+  description = "Name of SSM parameter containing MESH client key"
+}
+
+variable "mesh_ca_cert_ssm_param_name" {
+  type        = string
+  description = "Name of SSM parameter containing MESH CA certificate"
+}

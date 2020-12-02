@@ -157,7 +157,7 @@ resource "aws_s3_bucket_notification" "data_bucket_v2_notifications" {
 }
 
 data "aws_ssm_parameter" "splunk_trusted_principals" {
-  name = "/registrations/${var.environment}/user-input/splunk-trusted-principals"
+  name = var.splunk_trusted_principal_ssm_param_name
 }
 
 locals {
