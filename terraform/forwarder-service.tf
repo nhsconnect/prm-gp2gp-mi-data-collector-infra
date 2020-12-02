@@ -119,4 +119,32 @@ resource "aws_ecs_service" "forwarder" {
   task_definition = aws_ecs_task_definition.forwarder.arn
   launch_type = "FARGATE"
   desired_count   = 1
+ 
+  network_configuration {
+      subnets = [aws_subnet.public.id]
+      assign_public_ip = true
+      security_groups = [aws_security_group.forwarder.id]
+    }
+}
+
+resource "aws_security_group" "forwarder" {
+  name   = "${var.environment}-mesh-s3-forwarder"
+  vpc_id = aws_vpc.vpc.id
+
+  tags = merge(
+    local.common_tags,
+    {
+      Name = "${var.environment}-mesh-s3-forwarder"
+    }
+  )
+}
+
+resource "aws_security_group_rule" "forwarder" {
+  type              = "egress"
+  security_group_id = aws_security_group.forwarder.id
+  cidr_blocks       = ["0.0.0.0/0"]
+  from_port         = 0
+  to_port           = 0
+  protocol          = "-1"
+  description       = "Unrestricted egress"
 }
