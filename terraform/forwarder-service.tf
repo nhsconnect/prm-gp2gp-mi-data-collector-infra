@@ -17,7 +17,7 @@ resource "aws_cloudwatch_log_group" "mesh_s3_forwarder" {
   )
 }
 
-data "aws_iam_policy_document" "ecs_execution_assume" {
+data "aws_iam_policy_document" "ecs_assume" {
   statement {
     actions = ["sts:AssumeRole"]
 
@@ -33,7 +33,7 @@ data "aws_iam_policy_document" "ecs_execution_assume" {
 resource "aws_iam_role" "ecs_execution" {
   name               = "${var.environment}-registrations-mesh-forwarder-task"
   description        = "ECS task role for launching mesh s3 forwarder"
-  assume_role_policy = data.aws_iam_policy_document.ecs_execution_assume.json
+  assume_role_policy = data.aws_iam_policy_document.ecs_assume.json
 }
 
 resource "aws_iam_role_policy_attachment" "ecs_execution" {
@@ -81,6 +81,46 @@ data "aws_iam_policy_document" "ecs_execution" {
   }
 }
 
+resource "aws_iam_role" "forwarder" {
+  name               = "${var.environment}-registrations-mesh-s3-forwarder"
+  description        = "Role for mesh forwarder ECS task"
+  assume_role_policy = data.aws_iam_policy_document.ecs_assume.json
+}
+
+resource "aws_iam_role_policy_attachment" "s3_bucket_access" {
+  role       = aws_iam_role.forwarder.name
+  policy_arn = aws_iam_policy.data_bucket_v2_access.arn
+}
+
+resource "aws_iam_role_policy_attachment" "ssm_access" {
+  role       = aws_iam_role.forwarder.name
+  policy_arn = aws_iam_policy.ssm_access.arn
+}
+
+resource "aws_iam_policy" "ssm_access" {
+  name   = "${var.environment}-ssm-access"
+  policy = data.aws_iam_policy_document.ssm_access.json
+}
+
+data "aws_iam_policy_document" "ssm_access" {
+  statement {
+    sid = "GetSSMParameter"
+
+    actions = [
+        "ssm:GetParameter"
+    ]
+
+    resources = [
+      "arn:aws:ssm:${var.region}:${local.account_id}:parameter/registrations/${var.environment}/user-input/mesh/*"
+    ]
+  }
+}
+
+locals {
+  account_id = data.aws_caller_identity.current.account_id
+}
+
+data "aws_caller_identity" "current" {}
 
 resource "aws_ecs_task_definition" "forwarder" {
   family = "${var.environment}-mesh-s3-forwarder"
