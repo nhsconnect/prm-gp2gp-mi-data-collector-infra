@@ -73,7 +73,7 @@ resource "aws_lambda_function" "mi_data_collector_canary" {
 
   environment {
     variables = {
-      bucket_name   = aws_s3_bucket.mi_data.bucket
+      bucket_name   = aws_s3_bucket.mi_data_v2.bucket
       sns_topic_arn = aws_sns_topic.mi_data_collector_canary.arn
     }
   }
