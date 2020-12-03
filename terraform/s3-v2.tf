@@ -133,6 +133,7 @@ resource "aws_sqs_queue" "data_bucket_v2_notifications" {
 
 resource "aws_sqs_queue" "data_bucket_v2_notifications_deadletter" {
   name = "${aws_s3_bucket.mi_data_v2.bucket}-notifications-deadletter"
+  message_retention_seconds = 1209600
   tags = local.common_tags
 }
 
