@@ -1,6 +1,6 @@
 vpc_cidr="10.50.0.0/16"
 forwarder_repo_name="registrations/mesh-inbox-s3-forwarder"
-forwarder_image_tag="db2edd9"
+forwarder_image_tag="d17a414"
 mesh_url="https://mesh.spineservices.nhs.uk"
 splunk_trusted_principal_ssm_param_name="/registrations/dev/user-input/splunk-trusted-principals"
 mesh_mailbox_ssm_param_name="/registrations/dev/user-input/mesh/mailbox-name"
