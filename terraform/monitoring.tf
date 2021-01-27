@@ -1,11 +1,16 @@
+locals {
+  forward_message_metric_name        = "ForwardMessageEventCount"
+  mesh_s3_forwarder_metric_namespace = "MeshS3Forwarder/${var.environment}"
+}
+
 resource "aws_cloudwatch_log_metric_filter" "forward_message_event" {
   name           = "${var.environment}-mesh-s3-forward-message-event"
   pattern        = "{ $.message = \"FORWARD_MESH_MESSAGE\" }"
   log_group_name = aws_cloudwatch_log_group.mesh_s3_forwarder.name
 
   metric_transformation {
-    name          = "ForwardMessageEventCount"
-    namespace     = "MeshS3Forwarder/${var.environment}"
+    name          = local.forward_message_metric_name
+    namespace     = local.mesh_s3_forwarder_metric_namespace
     value         = 1
     default_value = 0
   }
@@ -19,13 +24,13 @@ resource "aws_cloudwatch_dashboard" "mesh_s3_forwarder" {
         "type" : "metric",
         "x" : 0,
         "y" : 0,
-        "width" : 6,
-        "height" : 3,
+        "width" : 12,
+        "height" : 6,
         "properties" : {
           "metrics" : [
             [
-              "${aws_cloudwatch_log_metric_filter.forward_message_event.metric_transformation[0].namespace}",
-              "${aws_cloudwatch_log_metric_filter.forward_message_event.name}"
+              local.mesh_s3_forwarder_metric_namespace,
+              local.forward_message_metric_name
             ]
           ],
           "period" : 300,
