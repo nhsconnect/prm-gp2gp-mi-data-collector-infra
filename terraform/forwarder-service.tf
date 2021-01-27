@@ -107,7 +107,7 @@ data "aws_iam_policy_document" "ssm_access" {
     sid = "GetSSMParameter"
 
     actions = [
-        "ssm:GetParameter"
+      "ssm:GetParameter"
     ]
 
     resources = [
@@ -126,19 +126,19 @@ resource "aws_ecs_task_definition" "forwarder" {
   family = "${var.environment}-mesh-s3-forwarder"
   container_definitions = jsonencode([
     {
-      name        = "mesh-s3-forwarder"
-      image       = "${data.aws_ecr_repository.mesh_s3_forwarder.repository_url}:${var.forwarder_image_tag}"
+      name  = "mesh-s3-forwarder"
+      image = "${data.aws_ecr_repository.mesh_s3_forwarder.repository_url}:${var.forwarder_image_tag}"
       environment = [
-        {"name": "MESH_URL", "value": var.mesh_url}, 
-        {"name": "MESH_MAILBOX_SSM_PARAM_NAME", "value": var.mesh_mailbox_ssm_param_name},
-        {"name": "MESH_PASSWORD_SSM_PARAM_NAME", "value": var.mesh_password_ssm_param_name},
-        {"name": "MESH_SHARED_KEY_SSM_PARAM_NAME", "value": var.mesh_shared_key_ssm_param_name},
-        {"name": "MESH_CLIENT_CERT_SSM_PARAM_NAME", "value": var.mesh_client_cert_ssm_param_name},
-        {"name": "MESH_CLIENT_KEY_SSM_PARAM_NAME", "value": var.mesh_client_key_ssm_param_name},
-        {"name": "MESH_CA_CERT_SSM_PARAM_NAME", "value": var.mesh_ca_cert_ssm_param_name},
-        {"name": "S3_BUCKET_NAME", "value": aws_s3_bucket.mi_data_v2.bucket}
+        { "name" : "MESH_URL", "value" : var.mesh_url },
+        { "name" : "MESH_MAILBOX_SSM_PARAM_NAME", "value" : var.mesh_mailbox_ssm_param_name },
+        { "name" : "MESH_PASSWORD_SSM_PARAM_NAME", "value" : var.mesh_password_ssm_param_name },
+        { "name" : "MESH_SHARED_KEY_SSM_PARAM_NAME", "value" : var.mesh_shared_key_ssm_param_name },
+        { "name" : "MESH_CLIENT_CERT_SSM_PARAM_NAME", "value" : var.mesh_client_cert_ssm_param_name },
+        { "name" : "MESH_CLIENT_KEY_SSM_PARAM_NAME", "value" : var.mesh_client_key_ssm_param_name },
+        { "name" : "MESH_CA_CERT_SSM_PARAM_NAME", "value" : var.mesh_ca_cert_ssm_param_name },
+        { "name" : "S3_BUCKET_NAME", "value" : aws_s3_bucket.mi_data_v2.bucket }
       ]
-      essential   = true
+      essential = true
       logConfiguration = {
         logDriver = "awslogs"
         options = {
@@ -160,23 +160,23 @@ resource "aws_ecs_task_definition" "forwarder" {
     }
   )
   execution_role_arn = aws_iam_role.ecs_execution.arn
-  task_role_arn = aws_iam_role.forwarder.arn
+  task_role_arn      = aws_iam_role.forwarder.arn
 }
 
 resource "aws_ecs_service" "forwarder" {
-  name            = "${var.environment}-mesh-s3-forwarder"
-  cluster         = aws_ecs_cluster.mi_data_collector.id
-  task_definition = aws_ecs_task_definition.forwarder.arn
-  launch_type = "FARGATE"
-  desired_count   = 1
-  deployment_maximum_percent = 100
+  name                               = "${var.environment}-mesh-s3-forwarder"
+  cluster                            = aws_ecs_cluster.mi_data_collector.id
+  task_definition                    = aws_ecs_task_definition.forwarder.arn
+  launch_type                        = "FARGATE"
+  desired_count                      = 1
+  deployment_maximum_percent         = 100
   deployment_minimum_healthy_percent = 0
- 
+
   network_configuration {
-      subnets = [aws_subnet.public.id]
-      assign_public_ip = true
-      security_groups = [aws_security_group.forwarder.id]
-    }
+    subnets          = [aws_subnet.public.id]
+    assign_public_ip = true
+    security_groups  = [aws_security_group.forwarder.id]
+  }
 }
 
 resource "aws_security_group" "forwarder" {

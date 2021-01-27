@@ -123,7 +123,7 @@ resource "aws_sns_topic_policy" "data_bucket_v2_notifications" {
 
 resource "aws_sqs_queue" "data_bucket_v2_notifications" {
   name                       = "${aws_s3_bucket.mi_data_v2.bucket}-notifications"
-  message_retention_seconds = 1209600
+  message_retention_seconds  = 1209600
   visibility_timeout_seconds = 300
   redrive_policy = jsonencode({
     deadLetterTargetArn = aws_sqs_queue.data_bucket_v2_notifications_deadletter.arn
@@ -133,9 +133,9 @@ resource "aws_sqs_queue" "data_bucket_v2_notifications" {
 }
 
 resource "aws_sqs_queue" "data_bucket_v2_notifications_deadletter" {
-  name = "${aws_s3_bucket.mi_data_v2.bucket}-notifications-deadletter"
+  name                      = "${aws_s3_bucket.mi_data_v2.bucket}-notifications-deadletter"
   message_retention_seconds = 1209600
-  tags = local.common_tags
+  tags                      = local.common_tags
 }
 
 resource "aws_sqs_queue_policy" "data_bucket_v2_notifications" {
