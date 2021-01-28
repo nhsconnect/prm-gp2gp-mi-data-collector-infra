@@ -67,7 +67,7 @@ resource "aws_lambda_function" "mi_data_collector_canary" {
   handler       = "datacanary.monitor_object_puts"
   tags          = local.common_tags
 
-  source_code_hash = filesha256(data.archive_file.mi_data_collector_canary.source_file)
+  source_code_hash = data.archive_file.mi_data_collector_canary.output_base64sha256
 
   runtime = "python3.8"
 
