@@ -56,7 +56,7 @@ resource "aws_iam_role_policy_attachment" "mi_data_collector_canary" {
 
 data "archive_file" "mi_data_collector_canary" {
   type        = "zip"
-  source_file = "${path.module}/datacanary.py"
+  source_dir = "${path.module}/lambda/datacanary/"
   output_path = "${path.module}/datacanary.zip"
 }
 
@@ -64,7 +64,7 @@ resource "aws_lambda_function" "mi_data_collector_canary" {
   filename      = data.archive_file.mi_data_collector_canary.output_path
   function_name = "${var.environment}-mi-data-collector-canary"
   role          = aws_iam_role.mi_data_collector_canary.arn
-  handler       = "datacanary.monitor_object_puts"
+  handler       = "main.monitor_object_puts"
   tags          = local.common_tags
 
   source_code_hash = data.archive_file.mi_data_collector_canary.output_base64sha256
