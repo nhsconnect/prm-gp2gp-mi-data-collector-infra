@@ -54,20 +54,14 @@ resource "aws_iam_role_policy_attachment" "mi_data_collector_canary" {
   policy_arn = aws_iam_policy.mi_data_collector_canary.arn
 }
 
-data "archive_file" "mi_data_collector_canary" {
-  type        = "zip"
-  source_dir = "${path.module}/lambda/datacanary/"
-  output_path = "${path.module}/datacanary.zip"
-}
-
 resource "aws_lambda_function" "mi_data_collector_canary" {
-  filename      = data.archive_file.mi_data_collector_canary.output_path
+  filename      = var.datacanary_lambda_zip
   function_name = "${var.environment}-mi-data-collector-canary"
   role          = aws_iam_role.mi_data_collector_canary.arn
   handler       = "main.monitor_object_puts"
   tags          = local.common_tags
 
-  source_code_hash = data.archive_file.mi_data_collector_canary.output_base64sha256
+  source_code_hash = filebase64sha256(var.datacanary_lambda_zip)
 
   runtime = "python3.8"
 

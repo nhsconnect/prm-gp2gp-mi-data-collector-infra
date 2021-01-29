@@ -75,3 +75,16 @@ variable "mesh_ca_cert_ssm_param_name" {
   type        = string
   description = "Name of SSM parameter containing MESH CA certificate"
 }
+
+variable "datacanary_lambda_zip" {
+  type        = string
+  description = "path to zipfile containing lambda code for data canary"
+  default     = "lambda/build/datacanary.zip"
+}
+
+variable "smoketest_lambda_zip" {
+  type        = string
+  description = "path to zipfile containing lambda code for forwarder smoke test"
+  default     = "lambda/build/smoketest.zip"
+}
+
