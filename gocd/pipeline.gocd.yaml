@@ -29,8 +29,11 @@ pipelines:
                 - build:
                     source: dev.tfplan
                 - build:
-                    source: terraform/datacanary.zip
-                    destination: terraform/
+                    source: lambda/build/datacanary.zip
+                    destination: lambda/build/
+                - build:
+                    source: lambda/build/smoketest.zip
+                    destination: lambda/build/
               tasks:
                 - exec:
                     command: /bin/bash
@@ -52,8 +55,14 @@ pipelines:
                 - fetch:
                     stage: plan_dev
                     job: plan
-                    source: terraform/datacanary.zip
-                    destination: terraform/
+                    source: lambda/build/smoketest.zip
+                    destination: lambda/build/
+                    is_file: yes
+                - fetch:
+                    stage: plan_dev
+                    job: plan
+                    source: lambda/build/datacanary.zip
+                    destination: lambda/build/
                     is_file: yes
                 - exec:
                     command: /bin/bash
@@ -70,8 +79,11 @@ pipelines:
                 - build:
                     source: prod.tfplan
                 - build:
-                    source: terraform/datacanary.zip
-                    destination: terraform/
+                    source: lambda/build/smoketest.zip
+                    destination: lambda/build/
+                - build:
+                    source: lambda/build/datacanary.zip
+                    destination: lambda/build/
               tasks:
                 - exec:
                     command: /bin/bash
@@ -96,8 +108,14 @@ pipelines:
                 - fetch:
                     stage: plan_prod
                     job: plan
-                    source: terraform/datacanary.zip
-                    destination: terraform/
+                    source: lambda/build/smoketest.zip
+                    destination: lambda/build/
+                    is_file: yes
+                - fetch:
+                    stage: plan_prod
+                    job: plan
+                    source: lambda/build/datacanary.zip
+                    destination: lambda/build/
                     is_file: yes
                 - exec:
                     command: /bin/bash
