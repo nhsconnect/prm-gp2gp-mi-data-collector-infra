@@ -24,6 +24,7 @@ function build_lambda {
     lambda_name=$1
 
     build_dir=lambda/build/$lambda_name
+    rm -rf $build_dir
     mkdir -p $build_dir
 
     requirements_file=lambda/$lambda_name/requirements.txt
@@ -31,10 +32,10 @@ function build_lambda {
         pip install -r $requirements_file -t $build_dir
     fi
 
-    cp lambda/$lambda_name/main.py $build_dir
+    cp lambda/$lambda_name/*.py $build_dir
 
     pushd $build_dir
-    zip -r ../$lambda_name.zip .
+    zip -r -X ../$lambda_name.zip .
     popd
 }
 
