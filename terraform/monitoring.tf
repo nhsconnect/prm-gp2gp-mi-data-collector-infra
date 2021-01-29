@@ -19,6 +19,7 @@ resource "aws_cloudwatch_log_metric_filter" "forward_message_event" {
 resource "aws_cloudwatch_dashboard" "mesh_s3_forwarder" {
   dashboard_name = "${var.environment}-mesh-s3-forwarder"
   dashboard_body = jsonencode({
+    "start": "-P1D"
     "widgets" : [
       {
         "type" : "metric",
@@ -33,7 +34,8 @@ resource "aws_cloudwatch_dashboard" "mesh_s3_forwarder" {
               local.forward_message_metric_name
             ]
           ],
-          "period" : 300,
+          "period" : 900,
+          "stat": "Sum",
           "region" : var.region,
           "title" : "${aws_cloudwatch_log_metric_filter.forward_message_event.name}"
         }
