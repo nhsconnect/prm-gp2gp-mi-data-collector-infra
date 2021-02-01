@@ -5,7 +5,7 @@ locals {
 
 resource "aws_cloudwatch_log_metric_filter" "forward_message_event" {
   name           = "${var.environment}-mesh-s3-forward-message-event"
-  pattern        = "{ $.message = \"FORWARD_MESH_MESSAGE\" }"
+  pattern        = "{ $.event = \"FORWARD_MESH_MESSAGE\" }"
   log_group_name = aws_cloudwatch_log_group.mesh_s3_forwarder.name
 
   metric_transformation {
@@ -19,7 +19,7 @@ resource "aws_cloudwatch_log_metric_filter" "forward_message_event" {
 resource "aws_cloudwatch_dashboard" "mesh_s3_forwarder" {
   dashboard_name = "${var.environment}-mesh-s3-forwarder"
   dashboard_body = jsonencode({
-    "start": "-P1D"
+    "start" : "-P1D"
     "widgets" : [
       {
         "type" : "metric",
@@ -35,7 +35,7 @@ resource "aws_cloudwatch_dashboard" "mesh_s3_forwarder" {
             ]
           ],
           "period" : 900,
-          "stat": "Sum",
+          "stat" : "Sum",
           "region" : var.region,
           "title" : "${aws_cloudwatch_log_metric_filter.forward_message_event.name}"
         }
