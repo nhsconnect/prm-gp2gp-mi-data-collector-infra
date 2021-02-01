@@ -1,5 +1,6 @@
 locals {
   forward_message_metric_name        = "ForwardMessageEventCount"
+  inbox_message_count_metric_name    = "InboxMessageCount"
   mesh_s3_forwarder_metric_namespace = "MeshS3Forwarder/${var.environment}"
 }
 
@@ -13,6 +14,18 @@ resource "aws_cloudwatch_log_metric_filter" "forward_message_event" {
     namespace     = local.mesh_s3_forwarder_metric_namespace
     value         = 1
     default_value = 0
+  }
+}
+
+resource "aws_cloudwatch_log_metric_filter" "inbox_message_count" {
+  name           = "${var.environment}-mesh-inbox-message-count"
+  pattern        = "{ $.event = \"COUNT_MESSAGES\" }"
+  log_group_name = aws_cloudwatch_log_group.mesh_s3_forwarder.name
+
+  metric_transformation {
+    name      = local.inbox_message_count_metric_name
+    namespace = local.mesh_s3_forwarder_metric_namespace
+    value     = "$.inboxMessageCount"
   }
 }
 
@@ -37,7 +50,27 @@ resource "aws_cloudwatch_dashboard" "mesh_s3_forwarder" {
           "period" : 900,
           "stat" : "Sum",
           "region" : var.region,
-          "title" : "${aws_cloudwatch_log_metric_filter.forward_message_event.name}"
+          "title" : "Number of messages forwarded"
+
+        }
+      },
+      {
+        "type" : "metric",
+        "x" : 1,
+        "y" : 0,
+        "width" : 12,
+        "height" : 6,
+        "properties" : {
+          "metrics" : [
+            [
+              local.mesh_s3_forwarder_metric_namespace,
+              local.inbox_message_count_metric_name
+            ]
+          ],
+          "period" : 300,
+          "stat" : "Maximum",
+          "region" : var.region,
+          "title" : "MESH Inbox Message Count"
         }
       }
     ]
