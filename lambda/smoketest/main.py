@@ -38,5 +38,5 @@ def send_mesh_message(event, context):
     client = build_mesh_client(secret_manager, mesh_mailbox_name)
 
     message = """HR,XXXXXX,000000000,"Testing3_9.7.14.0200 (45191)",122001000000000,2021-29-01,5.0,99,4.5,,"""
-    client.send_message(mesh_mailbox_name, bytes(message, 'utf-8'))
+    client.send_message(mesh_mailbox_name, bytes(message, 'utf-8'), filename=event["file_name"])
     print("Message sent")
