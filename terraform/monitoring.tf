@@ -2,6 +2,8 @@ locals {
   forward_message_metric_name        = "ForwardMessageEventCount"
   inbox_message_count_metric_name    = "InboxMessageCount"
   mesh_s3_forwarder_metric_namespace = "MeshS3Forwarder/${var.environment}"
+  error_count_table_query            = "SOURCE '${aws_cloudwatch_log_group.mesh_s3_forwarder.name}'| fields @timestamp, error | filter ispresent(error) | stats count(*) as totalCount by error, bin (1h) as timeframe"
+  error_count_graph_query            = "SOURCE '${aws_cloudwatch_log_group.mesh_s3_forwarder.name}'| fields @timestamp, error | filter ispresent(error) | stats count(*) as totalCount by bin (1h)"
 }
 
 resource "aws_cloudwatch_log_metric_filter" "forward_message_event" {
@@ -32,12 +34,10 @@ resource "aws_cloudwatch_log_metric_filter" "inbox_message_count" {
 resource "aws_cloudwatch_dashboard" "mesh_s3_forwarder" {
   dashboard_name = "${var.environment}-mesh-s3-forwarder"
   dashboard_body = jsonencode({
-    "start" : "-P1D"
+    "start" : "-P3D"
     "widgets" : [
       {
         "type" : "metric",
-        "x" : 0,
-        "y" : 0,
         "width" : 12,
         "height" : 6,
         "properties" : {
@@ -56,8 +56,6 @@ resource "aws_cloudwatch_dashboard" "mesh_s3_forwarder" {
       },
       {
         "type" : "metric",
-        "x" : 1,
-        "y" : 0,
         "width" : 12,
         "height" : 6,
         "properties" : {
@@ -71,8 +69,27 @@ resource "aws_cloudwatch_dashboard" "mesh_s3_forwarder" {
           "stat" : "Maximum",
           "region" : var.region,
           "title" : "MESH Inbox Message Count"
+        } }, {
+        "type" : "log",
+        "width" : 12,
+        "height" : 6,
+        "properties" : {
+          "region" : var.region,
+          "title" : "Total count of errors grouped by error type and hour",
+          "query" : local.error_count_table_query,
+          "view" : "table"
         }
-      }
+        }, {
+        "type" : "log",
+        "width" : 12,
+        "height" : 6,
+        "properties" : {
+          "region" : var.region,
+          "title" : "Total count of all errors",
+          "query" : local.error_count_graph_query,
+          "view" : "timeSeries"
+        }
+      },
     ]
   })
 }
