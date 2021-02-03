@@ -2,8 +2,9 @@ locals {
   forward_message_metric_name        = "ForwardMessageEventCount"
   inbox_message_count_metric_name    = "InboxMessageCount"
   mesh_s3_forwarder_metric_namespace = "MeshS3Forwarder/${var.environment}"
-  error_count_table_query            = "SOURCE '${aws_cloudwatch_log_group.mesh_s3_forwarder.name}'| fields @timestamp, error | filter ispresent(error) | stats count(*) as totalCount by error, bin (1h) as timeframe"
-  error_count_graph_query            = "SOURCE '${aws_cloudwatch_log_group.mesh_s3_forwarder.name}'| fields @timestamp, error | filter ispresent(error) | stats count(*) as totalCount by bin (1h)"
+  error_count_table_query            = "SOURCE '${aws_cloudwatch_log_group.mesh_s3_forwarder.name}' | fields @timestamp, error | filter ispresent(error) | stats count(*) as totalCount by error, bin (1h) as timeframe"
+  error_count_graph_query            = "SOURCE '${aws_cloudwatch_log_group.mesh_s3_forwarder.name}' | fields @timestamp, error | filter ispresent(error) | stats count(*) as totalCount by bin (1h)"
+  messages_per_sender_table_query    = "SOURCE '${aws_cloudwatch_log_group.mesh_s3_forwarder.name}' | filter event = \"FORWARD_MESH_MESSAGE\" or message = \"FORWARD_MESH_MESSAGE\" | stats count(*) as totalCount by sender"
 }
 
 resource "aws_cloudwatch_log_metric_filter" "forward_message_event" {
@@ -69,7 +70,9 @@ resource "aws_cloudwatch_dashboard" "mesh_s3_forwarder" {
           "stat" : "Maximum",
           "region" : var.region,
           "title" : "MESH Inbox Message Count"
-        } }, {
+        }
+      },
+      {
         "type" : "log",
         "width" : 12,
         "height" : 6,
@@ -79,7 +82,8 @@ resource "aws_cloudwatch_dashboard" "mesh_s3_forwarder" {
           "query" : local.error_count_table_query,
           "view" : "table"
         }
-        }, {
+      },
+      {
         "type" : "log",
         "width" : 12,
         "height" : 6,
@@ -88,6 +92,17 @@ resource "aws_cloudwatch_dashboard" "mesh_s3_forwarder" {
           "title" : "Total count of all errors",
           "query" : local.error_count_graph_query,
           "view" : "timeSeries"
+        }
+      },
+      {
+        "type" : "log",
+        "width" : 12,
+        "height" : 6,
+        "properties" : {
+          "region" : var.region,
+          "title" : "Count of messages per sender",
+          "query" : local.messages_per_sender_table_query,
+          "view" : "table"
         }
       },
     ]
