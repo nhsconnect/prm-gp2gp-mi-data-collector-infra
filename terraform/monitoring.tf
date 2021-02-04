@@ -32,8 +32,8 @@ resource "aws_cloudwatch_log_metric_filter" "inbox_message_count" {
   }
 }
 
-resource "aws_cloudwatch_dashboard" "mi_collector" {
-  dashboard_name = "${var.environment}-mi-collector"
+resource "aws_cloudwatch_dashboard" "mi_data_collector" {
+  dashboard_name = "${var.environment}-registrations-mi-data-collector"
   dashboard_body = jsonencode({
     "start" : "-P3D"
     "widgets" : [
