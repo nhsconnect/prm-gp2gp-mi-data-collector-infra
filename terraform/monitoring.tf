@@ -122,7 +122,44 @@ resource "aws_cloudwatch_dashboard" "mi_collector" {
           "region" : var.region,
           "title" : "Count of messages in dead letter queue",
           "view" : "timeSeries"
-
+        }
+      },
+      {
+        "type" : "metric",
+        "width" : 6,
+        "height" : 6,
+        "properties" : {
+          "metrics" : [
+            [
+              "ECS/ContainerInsights",
+              "TaskCount",
+              "ClusterName",
+              aws_ecs_cluster.mi_data_collector.name,
+              { "stat" : "Average" }
+            ]
+          ],
+          "region" : var.region,
+          "title" : "Count of running ECS tasks",
+          "view" : "timeSeries"
+        }
+      },
+      {
+        "type" : "metric",
+        "width" : 6,
+        "height" : 6,
+        "properties" : {
+          "metrics" : [
+            [
+              "ECS/ContainerInsights",
+              "ServiceCount",
+              "ClusterName",
+              aws_ecs_cluster.mi_data_collector.name,
+              { "stat" : "Average" }
+            ]
+          ],
+          "region" : var.region,
+          "title" : "Count of services in the ECS cluster",
+          "view" : "timeSeries"
         }
       },
     ]
