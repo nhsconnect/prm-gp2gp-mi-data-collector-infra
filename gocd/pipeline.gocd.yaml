@@ -34,6 +34,9 @@ pipelines:
                 - build:
                     source: lambda/build/smoketest.zip
                     destination: lambda/build/
+                - build:
+                    source: lambda/build/alert.zip
+                    destination: lambda/build/
               tasks:
                 - exec:
                     command: /bin/bash
@@ -64,6 +67,12 @@ pipelines:
                     source: lambda/build/datacanary.zip
                     destination: lambda/build/
                     is_file: yes
+                - fetch:
+                    stage: plan_dev
+                    job: plan
+                    source: lambda/build/alert.zip
+                    destination: lambda/build/
+                    is_file: yes
                 - exec:
                     command: /bin/bash
                     arguments:
@@ -83,6 +92,9 @@ pipelines:
                     destination: lambda/build/
                 - build:
                     source: lambda/build/datacanary.zip
+                    destination: lambda/build/
+                - build:
+                    source: lambda/build/alert.zip
                     destination: lambda/build/
               tasks:
                 - exec:
@@ -115,6 +127,12 @@ pipelines:
                     stage: plan_prod
                     job: plan
                     source: lambda/build/datacanary.zip
+                    destination: lambda/build/
+                    is_file: yes
+                - fetch:
+                    stage: plan_prod
+                    job: plan
+                    source: lambda/build/alert.zip
                     destination: lambda/build/
                     is_file: yes
                 - exec:
