@@ -19,8 +19,9 @@ def lambda_handler(event, context):
     secret_manager = SsmSecretManager(ssm)
     alert_webhook_url = secret_manager.get_secret(os.environ["ALERT_WEBHOOK_URL_PARAM_NAME"])
 
+    sns_message = json.loads(event['Records'][0]['Sns']['Message'])
     msg = {
-        "text": "Hello World",
+        "text": f"Alarm {sns_message['AlarmName']}: {sns_message['AlarmDescription']}"
     }
     
     encoded_msg = json.dumps(msg).encode('utf-8')

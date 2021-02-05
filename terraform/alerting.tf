@@ -1,13 +1,13 @@
 resource "aws_cloudwatch_metric_alarm" "forward_message_count" {
   alarm_name          = "${var.environment}-forward-message-count"
-  comparison_operator = "LessThanOrEqualToThreshold"
-  evaluation_periods  = "5"
+  comparison_operator = "LessThanThreshold"
+  evaluation_periods  = "1"
   metric_name         = aws_cloudwatch_log_metric_filter.forward_message_event.metric_transformation[0].name
   namespace           = aws_cloudwatch_log_metric_filter.forward_message_event.metric_transformation[0].namespace
   period              = "60"
   statistic           = "Maximum"
-  threshold           = "0"
-  alarm_description   = "This alerts when no messages have been forwarded"
+  threshold           = "1"
+  alarm_description   = "No messages forwarded within 7 days."
   actions_enabled     = "true"
   alarm_actions       = [aws_sns_topic.mi_data_collector_alert.arn]
   tags                = local.common_tags
