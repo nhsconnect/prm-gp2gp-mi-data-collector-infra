@@ -76,6 +76,11 @@ variable "mesh_ca_cert_ssm_param_name" {
   description = "Name of SSM parameter containing MESH CA certificate"
 }
 
+variable "alert_webhook_url_ssm_param_name" {
+  type        = string
+  description = "Name of SSM parameter containing MI Data Collector Alert webhook URL"
+}
+
 variable "datacanary_lambda_zip" {
   type        = string
   description = "path to zipfile containing lambda code for data canary"
@@ -86,5 +91,11 @@ variable "smoketest_lambda_zip" {
   type        = string
   description = "path to zipfile containing lambda code for forwarder smoke test"
   default     = "lambda/build/smoketest.zip"
+}
+
+variable "alert_lambda_zip" {
+  type        = string
+  description = "path to zipfile containing lambda code for MI Data collector alerts"
+  default     = "lambda/build/alert.zip"
 }
 

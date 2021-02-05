@@ -42,6 +42,7 @@ function build_lambda {
 function build_lambdas {
     build_lambda datacanary
     build_lambda smoketest
+    build_lambda alert
 }
 
 if [ "$#" -lt 1 ]; then
