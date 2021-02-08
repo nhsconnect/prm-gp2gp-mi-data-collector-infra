@@ -27,6 +27,7 @@ resource "aws_lambda_function" "mi_data_collector_alert" {
   environment {
     variables = {
       ALERT_WEBHOOK_URL_PARAM_NAME = var.alert_webhook_url_ssm_param_name
+      AWS_REGION                   = var.region
     }
   }
 }

@@ -14,14 +14,21 @@ class SsmSecretManager:
         return response["Parameter"]["Value"]
 
 
+def generate_markdown_message(alarm_name, message):
+    aws_region = os.environ["AWS_REGION"]
+    return f"##**{alarm_name}**\n{message}\n[Link to see more details](https://{aws_region}.console.aws.amazon.com/cloudwatch/home?region={aws_region}#alarmsV2:alarm/{alarm_name})"
+
+
 def lambda_handler(event, context):
     ssm = boto3.client("ssm")
     secret_manager = SsmSecretManager(ssm)
     alert_webhook_url = secret_manager.get_secret(os.environ["ALERT_WEBHOOK_URL_PARAM_NAME"])
 
     sns_message = json.loads(event['Records'][0]['Sns']['Message'])
+    markdown_message = generate_markdown_message(alarm_name=sns_message['AlarmName'], message=sns_message['AlarmDescription'])
     msg = {
-        "text": f"Alarm {sns_message['AlarmName']}: {sns_message['AlarmDescription']}"
+        "text": markdown_message,
+        "textFormat": "markdown"
     }
     
     encoded_msg = json.dumps(msg).encode('utf-8')
