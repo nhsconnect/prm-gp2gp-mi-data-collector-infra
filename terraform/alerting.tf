@@ -1,11 +1,11 @@
 resource "aws_cloudwatch_metric_alarm" "forward_message_count" {
   alarm_name          = "${var.environment}-forward-message-count"
   comparison_operator = "LessThanThreshold"
-  evaluation_periods  = "1"
+  evaluation_periods  = "7"
   metric_name         = aws_cloudwatch_log_metric_filter.forward_message_event.metric_transformation[0].name
   namespace           = aws_cloudwatch_log_metric_filter.forward_message_event.metric_transformation[0].namespace
-  period              = "60"
-  statistic           = "Maximum"
+  period              = "86400"
+  statistic           = "Minimum"
   threshold           = "1"
   alarm_description   = "No messages forwarded within 7 days."
   actions_enabled     = "true"
@@ -13,7 +13,54 @@ resource "aws_cloudwatch_metric_alarm" "forward_message_count" {
   tags                = local.common_tags
 }
 
-
+resource "aws_cloudwatch_metric_alarm" "mesh_inbox_message_count" {
+  alarm_name          = "${var.environment}-mesh-inbox-message-count"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = "6"
+  metric_name         = aws_cloudwatch_log_metric_filter.inbox_message_count.metric_transformation[0].name
+  namespace           = aws_cloudwatch_log_metric_filter.inbox_message_count.metric_transformation[0].namespace
+  period              = "3600"
+  statistic           = "Maximum"
+  threshold           = "0"
+  alarm_description   = "There are unprocessed messages in the MESH inbox for more than 6 hours."
+  actions_enabled     = "true"
+  alarm_actions       = [aws_sns_topic.mi_data_collector_alert.arn]
+  tags                = local.common_tags
+}
+resource "aws_cloudwatch_metric_alarm" "dead_letter_queue_message_count" {
+  alarm_name          = "${var.environment}-dead-letter-queue-message-count"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = "1"
+  metric_name         = "ApproximateNumberOfMessagesVisible"
+  namespace           = "AWS/SQS"
+  period              = "600"
+  statistic           = "Maximum"
+  threshold           = "0"
+  alarm_description   = "There are messages in the MI data notifications SQS dead letter queue."
+  actions_enabled     = "true"
+  alarm_actions       = [aws_sns_topic.mi_data_collector_alert.arn]
+  tags                = local.common_tags
+  dimensions = {
+    QueueName = aws_sqs_queue.data_bucket_v2_notifications_deadletter.name
+  }
+}
+resource "aws_cloudwatch_metric_alarm" "mesh_s3_forwarder_ecs_task_count" {
+  alarm_name          = "${var.environment}-mesh-s3-forwarder-ecs-task-count"
+  comparison_operator = "LessThanThreshold"
+  evaluation_periods  = "12"
+  metric_name         = "TaskCount"
+  namespace           = "ECS/ContainerInsights"
+  period              = "300"
+  statistic           = "Minimum"
+  threshold           = "1"
+  alarm_description   = "No tasks running continuously within 1 hour."
+  actions_enabled     = "true"
+  alarm_actions       = [aws_sns_topic.mi_data_collector_alert.arn]
+  tags                = local.common_tags
+  dimensions = {
+    ClusterName = aws_ecs_cluster.mi_data_collector.name
+  }
+}
 
 resource "aws_lambda_function" "mi_data_collector_alert" {
   filename      = var.alert_lambda_zip
@@ -33,7 +80,6 @@ resource "aws_lambda_function" "mi_data_collector_alert" {
     }
   }
 }
-
 resource "aws_iam_role" "mi_data_collector_alert" {
   name               = "${var.environment}-mi-data-collector-alert"
   assume_role_policy = data.aws_iam_policy_document.lambda_assume_role.json
