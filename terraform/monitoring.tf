@@ -51,7 +51,12 @@ resource "aws_cloudwatch_dashboard" "mi_data_collector" {
           "period" : 900,
           "stat" : "Sum",
           "region" : var.region,
-          "title" : "Count of messages forwarded"
+          "title" : "Count of messages forwarded",
+          "yAxis" : {
+            "left" : {
+              "min" : 0
+            }
+          }
 
         }
       },
@@ -69,7 +74,12 @@ resource "aws_cloudwatch_dashboard" "mi_data_collector" {
           "period" : 300,
           "stat" : "Maximum",
           "region" : var.region,
-          "title" : "Count of messages in MESH Inbox"
+          "title" : "Count of messages in MESH Inbox",
+          "yAxis" : {
+            "left" : {
+              "min" : 0
+            }
+          }
         }
       },
       {
@@ -91,7 +101,12 @@ resource "aws_cloudwatch_dashboard" "mi_data_collector" {
           "region" : var.region,
           "title" : "Count of all errors",
           "query" : local.error_count_graph_query,
-          "view" : "timeSeries"
+          "view" : "timeSeries",
+          "yAxis" : {
+            "left" : {
+              "min" : 0
+            }
+          }
         }
       },
       {
@@ -121,7 +136,12 @@ resource "aws_cloudwatch_dashboard" "mi_data_collector" {
           "stat" : "Maximum",
           "region" : var.region,
           "title" : "Count of messages in dead letter queue",
-          "view" : "timeSeries"
+          "view" : "timeSeries",
+          "yAxis" : {
+            "left" : {
+              "min" : 0
+            }
+          }
         }
       },
       {
@@ -140,7 +160,12 @@ resource "aws_cloudwatch_dashboard" "mi_data_collector" {
           ],
           "region" : var.region,
           "title" : "Count of running ECS tasks",
-          "view" : "timeSeries"
+          "view" : "timeSeries",
+          "yAxis" : {
+            "left" : {
+              "min" : 0
+            }
+          }
         }
       },
       {
@@ -159,7 +184,12 @@ resource "aws_cloudwatch_dashboard" "mi_data_collector" {
           ],
           "region" : var.region,
           "title" : "Count of services in the ECS cluster",
-          "view" : "timeSeries"
+          "view" : "timeSeries",
+          "yAxis" : {
+            "left" : {
+              "min" : 0
+            }
+          }
         }
       },
       {
