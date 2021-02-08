@@ -1,8 +1,3 @@
-resource "aws_sns_topic" "mi_data_collector_canary" {
-  name = "${var.environment}-mi-data-collector-canary"
-  tags = local.common_tags
-}
-
 data "aws_iam_policy_document" "lambda_assume_role" {
   statement {
     actions = ["sts:AssumeRole"]
@@ -34,7 +29,7 @@ data "aws_iam_policy_document" "mi_data_collector_canary" {
     ]
 
     resources = [
-      aws_sns_topic.mi_data_collector_canary.arn
+      aws_sns_topic.mi_data_collector_alert.arn
     ]
   }
 }
@@ -67,8 +62,8 @@ resource "aws_lambda_function" "mi_data_collector_canary" {
 
   environment {
     variables = {
-      bucket_name   = aws_s3_bucket.mi_data_v2.bucket
-      sns_topic_arn = aws_sns_topic.mi_data_collector_canary.arn
+      BUCKET_NAME   = aws_s3_bucket.mi_data_v2.bucket
+      SNS_TOPIC_ARN = aws_sns_topic.mi_data_collector_alert.arn
     }
   }
 }

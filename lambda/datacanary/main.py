@@ -1,5 +1,6 @@
 import boto3
 import os
+import json
 from datetime import datetime, date, timedelta
 
 class DateRange:
@@ -60,36 +61,30 @@ def last_seven_days():
     end =today
   )
 
-def generate_message(count, bucket_name):
-  if count <= 0:
-    return  (
-      f"Failed data canary: {bucket_name}",
-      f"There have been no objects added to bucket {bucket_name} in the last seven days"
-    )
-  else:
-    return (
-      f"Successful data canary: {bucket_name}",
-      f"There have been {count} objects added to bucket {bucket_name} in the last seven days"
-    )
 
 def monitor_object_puts(event, context):
   cloudwatch_client = boto3.client('cloudwatch')
   sns_client = boto3.client('sns')
-  sns_topic_arn = os.environ["sns_topic_arn"]
+  sns_topic_arn = os.environ["SNS_TOPIC_ARN"]
 
-  bucket_name = os.environ["bucket_name"]
+  bucket_name = os.environ["BUCKET_NAME"]
 
   metric_fetcher = PutMetricFetcher(cloudwatch_client)
 
   daily_put_counts = metric_fetcher.get_daily_put_counts(bucket_name, last_seven_days())
   total_counts = int(sum(daily_put_counts))
-  subject, message = generate_message(total_counts, bucket_name)
 
-  print(subject, message)
+  if (total_counts == 0):
+      message = {
+        "AlarmName": f"Failed data canary: {bucket_name}",
+        "AlarmDescription": f"There have been no objects added to bucket {bucket_name} in the last seven days."
+      }
+      print(message)
 
-  sns_client.publish(
-    TopicArn=sns_topic_arn,
-    Message=message,
-    Subject=subject,
-  )
-
+      sns_client.publish(
+        TopicArn=sns_topic_arn,
+        Message=json.dumps({'default': json.dumps(message)}),
+        MessageStructure='json'
+      )
+  else:
+    return f"SNS notification not sent since there have been {total_counts} objects added to the bucket {bucket_name} in the last seven days."
