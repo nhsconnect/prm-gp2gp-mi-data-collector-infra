@@ -15,7 +15,7 @@ class SsmSecretManager:
 
 
 def generate_markdown_message(alarm_name, message):
-    aws_region = os.environ["AWS_REGION"]
+    aws_region = os.environ["AWS_ALARM_REGION"]
     return f"##**{alarm_name}**\n{message}\n[Link to see more details](https://{aws_region}.console.aws.amazon.com/cloudwatch/home?region={aws_region}#alarmsV2:alarm/{alarm_name})"
 
 

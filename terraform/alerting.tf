@@ -13,6 +13,8 @@ resource "aws_cloudwatch_metric_alarm" "forward_message_count" {
   tags                = local.common_tags
 }
 
+
+
 resource "aws_lambda_function" "mi_data_collector_alert" {
   filename      = var.alert_lambda_zip
   function_name = "${var.environment}-mi-data-collector-alert"
@@ -27,7 +29,7 @@ resource "aws_lambda_function" "mi_data_collector_alert" {
   environment {
     variables = {
       ALERT_WEBHOOK_URL_PARAM_NAME = var.alert_webhook_url_ssm_param_name
-      AWS_REGION                   = var.region
+      AWS_ALARM_REGION             = var.region
     }
   }
 }
