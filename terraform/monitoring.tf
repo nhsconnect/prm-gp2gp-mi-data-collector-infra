@@ -67,6 +67,32 @@ resource "aws_cloudwatch_dashboard" "mi_data_collector" {
         "properties" : {
           "metrics" : [
             [
+              "AWS/S3",
+              "PutRequests",
+              "BucketName",
+              aws_s3_bucket.mi_data_v2.bucket,
+              "FilterId",
+              "EntireBucket"
+            ]
+          ],
+          "stat" : "Sum",
+          "region" : var.region,
+          "title" : "Count of PUT requests to MI Data S3 bucket",
+          "yAxis" : {
+            "left" : {
+              "min" : 0
+            }
+          }
+
+        }
+      },
+      {
+        "type" : "metric",
+        "width" : 12,
+        "height" : 6,
+        "properties" : {
+          "metrics" : [
+            [
               local.mesh_s3_forwarder_metric_namespace,
               local.inbox_message_count_metric_name
             ]
@@ -80,6 +106,17 @@ resource "aws_cloudwatch_dashboard" "mi_data_collector" {
               "min" : 0
             }
           }
+        }
+      },
+      {
+        "type" : "log",
+        "width" : 12,
+        "height" : 6,
+        "properties" : {
+          "region" : var.region,
+          "title" : "Count of messages per sender",
+          "query" : local.messages_per_sender_table_query,
+          "view" : "table"
         }
       },
       {
@@ -107,17 +144,6 @@ resource "aws_cloudwatch_dashboard" "mi_data_collector" {
               "min" : 0
             }
           }
-        }
-      },
-      {
-        "type" : "log",
-        "width" : 12,
-        "height" : 6,
-        "properties" : {
-          "region" : var.region,
-          "title" : "Count of messages per sender",
-          "query" : local.messages_per_sender_table_query,
-          "view" : "table"
         }
       },
       {
