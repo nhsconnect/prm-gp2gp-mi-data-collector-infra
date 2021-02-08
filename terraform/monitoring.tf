@@ -162,6 +162,26 @@ resource "aws_cloudwatch_dashboard" "mi_data_collector" {
           "view" : "timeSeries"
         }
       },
+      {
+        "type" : "metric",
+        "width" : 12,
+        "height" : 6,
+        "properties" : {
+          "metrics" : [
+            ["AWS/Lambda", "Errors", "FunctionName", aws_lambda_function.mi_data_collector_alert.function_name, "Resource", aws_lambda_function.mi_data_collector_alert.function_name, { "id" : "errors", "stat" : "Sum", "color" : "#d13212" }],
+            [".", "Invocations", ".", ".", ".", ".", { "id" : "invocations", "stat" : "Sum", "visible" : false }],
+            [{ "expression" : "100 - 100 * errors / MAX([errors, invocations])", "label" : "Success rate (%)", "id" : "availability", "yAxis" : "right", "region" : var.region }]
+          ],
+          "region" : var.region,
+          "title" : "Error count and success rate (%) of Alerting Lambda",
+          "view" : "timeSeries",
+          "yAxis" : {
+            "right" : {
+              "max" : 100
+            }
+          },
+        }
+      },
     ]
   })
 }
