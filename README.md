@@ -21,6 +21,6 @@ Rolling out terraform against each environment is managed by the GoCD pipeline. 
 2. Invoke terraform locally
 
 ```
-  ./tasks validate dev
+  ./tasks validate
   ./tasks plan dev
 ```
