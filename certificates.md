@@ -3,15 +3,15 @@
 ## About this guide
 
 MESH uses mutual authentication to verify the identity of both the server and
-client. This means the MESH to S3 forwarder requires certificates to connect to
+client. This means the `MESH to S3 forwarder` requires certificates to connect to
 the MESH mailbox. The certificate we use is provided by DigiCert, and expires
 after one year.
 
 This guide will walk through how to update the certificate, and supplements the
 [existing instructions][1] by elaborating on:
 
-- How to start Internet Explorer
-- The certificate format expected by our MESH to S3 forwarder
+- How to start Internet Explorer inside the VDI
+- The certificate format expected by our `MESH to S3 forwarder`
 - Where to place the certificates once generated
 
 ## Requesting a new certificate
