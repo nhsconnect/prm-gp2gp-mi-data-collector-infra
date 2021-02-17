@@ -176,13 +176,13 @@ resource "aws_cloudwatch_dashboard" "mi_data_collector" {
         "height" : 6,
         "properties" : {
           "metrics" : [
-            [{ "expression" : "FILL(METRICS(), 0)", "label" : "FilledTaskCount", "id" : "e1" }],
+            [{ "expression" : "FILL(METRICS(), 0)", "label" : "Fill", "id" : "e1" }],
             [
               "ECS/ContainerInsights",
               "TaskCount",
               "ClusterName",
               aws_ecs_cluster.mi_data_collector.name,
-              { "stat" : "Average" }
+              { "stat" : "Average", "visible" : false }
             ]
           ],
           "region" : var.region,
