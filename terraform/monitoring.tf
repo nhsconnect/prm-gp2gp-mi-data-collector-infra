@@ -176,6 +176,7 @@ resource "aws_cloudwatch_dashboard" "mi_data_collector" {
         "height" : 6,
         "properties" : {
           "metrics" : [
+            [{ "expression" : "FILL(METRICS(), 0)", "label" : "FilledTaskCount", "id" : "e1" }],
             [
               "ECS/ContainerInsights",
               "TaskCount",
