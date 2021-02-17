@@ -41,6 +41,7 @@ resource "aws_cloudwatch_metric_alarm" "mesh_s3_forwarder_ecs_task_count" {
   alarm_description   = "No tasks running continuously within 1 hour."
   actions_enabled     = "true"
   alarm_actions       = [aws_sns_topic.mi_data_collector_alert.arn]
+  treat_missing_data  = "breaching"
   tags                = local.common_tags
   dimensions = {
     ClusterName = aws_ecs_cluster.mi_data_collector.name
