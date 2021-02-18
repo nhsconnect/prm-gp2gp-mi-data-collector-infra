@@ -69,6 +69,7 @@ case "${task}" in
         tf_init ${tf_dir} ${stack_env} 
         terraform plan \
           -var environment=${stack_env} \
+          -var forwarder_image_tag=${IMAGE_TAG} \
           -var-file=${stack_env}.tfvars \
           -out=${stack_env}.tfplan \
           ${tf_dir}

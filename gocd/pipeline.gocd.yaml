@@ -6,6 +6,9 @@ pipelines:
     materials:
       git:
         type: configrepo
+      mesh_s3_forwarder_image:
+        pipeline: prm-gp2gp-mesh-s3-forwarder
+        stage: build_inbox_forwarder
     stages:
       - validate:
           clean_workspace: true
@@ -42,7 +45,7 @@ pipelines:
                     command: /bin/bash
                     arguments:
                       - -c
-                      - ./tasks dojo-plan dev
+                      - IMAGE_TAG=$GO_DEPENDENCY_LABEL_MESH_S3_FORWARDER_IMAGE ./tasks dojo-plan dev
       - apply_dev:
           clean_workspace: true
           jobs:
@@ -101,7 +104,7 @@ pipelines:
                     command: /bin/bash
                     arguments:
                       - -c
-                      - ./tasks dojo-plan prod
+                      - IMAGE_TAG=$GO_DEPENDENCY_LABEL_MESH_S3_FORWARDER_IMAGE ./tasks dojo-plan prod
       - apply_prod:
           clean_workspace: true
           approval:
