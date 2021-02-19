@@ -10,6 +10,7 @@ resource "aws_cloudwatch_metric_alarm" "mesh_inbox_message_count" {
   alarm_description   = "There are unprocessed messages in the MESH inbox for more than 6 hours."
   actions_enabled     = "true"
   alarm_actions       = [aws_sns_topic.mi_data_collector_alert.arn]
+  treat_missing_data  = "breaching"
   tags                = local.common_tags
 }
 resource "aws_cloudwatch_metric_alarm" "dead_letter_queue_message_count" {
