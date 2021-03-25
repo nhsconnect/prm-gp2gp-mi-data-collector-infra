@@ -9,3 +9,4 @@ mesh_client_cert_ssm_param_name="/registrations/prod/user-input/mesh/mailbox-cli
 mesh_client_key_ssm_param_name="/registrations/prod/user-input/mesh/mailbox-client-private-key"
 mesh_ca_cert_ssm_param_name="/registrations/prod/user-input/mesh/ca-certificate-chain"
 alert_webhook_url_ssm_param_name="/registrations/prod/user-input/alert-webhook-url"
+log_retention_in_days=180

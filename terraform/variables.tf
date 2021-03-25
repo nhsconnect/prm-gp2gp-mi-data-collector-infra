@@ -99,3 +99,8 @@ variable "alert_lambda_zip" {
   default     = "lambda/build/alert.zip"
 }
 
+variable "log_retention_in_days" {
+  type        = number
+  description = "days to keep the cloudwatch logs"
+  default     = 180
+}

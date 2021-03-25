@@ -19,6 +19,7 @@ resource "aws_cloudwatch_log_group" "mesh_s3_forwarder" {
       Name = "${var.environment}-mesh-s3-forwarder"
     }
   )
+  retention_in_days = var.log_retention_in_days
 }
 
 data "aws_iam_policy_document" "ecs_assume" {
