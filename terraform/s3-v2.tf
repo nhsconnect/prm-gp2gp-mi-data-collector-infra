@@ -158,6 +158,12 @@ resource "aws_s3_bucket_notification" "data_bucket_v2_notifications" {
   }
 }
 
+resource "aws_ssm_parameter" "mi_data_bucket" {
+  name  = "/registrations/${var.environment}/output/${var.repo_name}/mi-data-bucket-name"
+  type  = "String"
+  value = aws_s3_bucket.mi_data_v2.bucket
+}
+
 data "aws_ssm_parameter" "splunk_trusted_principals" {
   name = var.splunk_trusted_principal_ssm_param_name
 }
