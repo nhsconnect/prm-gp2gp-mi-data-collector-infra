@@ -10,6 +10,10 @@ resource "aws_s3_bucket" "mi_data_v2" {
     }
   }
 
+  versioning {
+    enabled = true
+  }
+
   tags = merge(
     local.common_tags,
     {
