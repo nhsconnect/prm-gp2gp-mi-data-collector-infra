@@ -26,6 +26,13 @@ variable "vpc_cidr" {
   description = "CIDR block to assign VPC"
 }
 
+variable "private_cidr_offset" {
+  type        = number
+  description = "CIDR address offset to begin creating private subnets at"
+  default     = 100
+}
+
+
 variable "forwarder_repo_name" {
   type        = string
   description = "Docker repository of Mesh to S3 forwarder"

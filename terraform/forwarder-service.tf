@@ -178,7 +178,7 @@ resource "aws_ecs_service" "forwarder" {
   deployment_minimum_healthy_percent = 0
 
   network_configuration {
-    subnets          = [aws_subnet.public.id]
+    subnets          = [aws_subnet.private.id]
     assign_public_ip = true
     security_groups  = [aws_security_group.forwarder.id]
   }
