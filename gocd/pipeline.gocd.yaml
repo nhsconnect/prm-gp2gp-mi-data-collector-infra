@@ -7,7 +7,7 @@ pipelines:
       git:
         type: configrepo
       mesh_s3_forwarder_image:
-        pipeline: prm-gp2gp-mesh-s3-forwarder
+        pipeline: prm-mesh-aws-forwarder
         stage: build_inbox_forwarder
     stages:
       - validate:
