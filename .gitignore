@@ -3,3 +3,4 @@ lambda/build
 *.tfplan
 *.zip
 .DS_Store
+.idea
