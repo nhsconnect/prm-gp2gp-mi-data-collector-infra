@@ -14,6 +14,10 @@ resource "aws_s3_bucket" "mi_data_v2" {
     enabled = true
   }
 
+  lifecycle {
+    prevent_destroy = true
+  }
+
   tags = merge(
     local.common_tags,
     {
