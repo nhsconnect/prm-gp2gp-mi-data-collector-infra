@@ -1,22 +1,5 @@
 resource "aws_s3_bucket" "mi_data_v2" {
   bucket = "prm-gp2gp-mi-data-${var.environment}-v2"
-  acl    = "private"
-
-  server_side_encryption_configuration {
-    rule {
-      apply_server_side_encryption_by_default {
-        sse_algorithm = "AES256"
-      }
-    }
-  }
-
-  versioning {
-    enabled = true
-  }
-
-  lifecycle {
-    prevent_destroy = true
-  }
 
   tags = merge(
     local.common_tags,
@@ -24,6 +7,32 @@ resource "aws_s3_bucket" "mi_data_v2" {
       Name = "${var.environment}-GP2GP-MI-data-v2"
     }
   )
+}
+
+resource "aws_s3_bucket_acl" "mi_data_v2" {
+  bucket = aws_s3_bucket.mi_data_v2.id
+  acl    = "private"
+}
+
+resource "aws_s3_bucket_versioning" "mi_data_v2" {
+  bucket = aws_s3_bucket.mi_data_v2.id
+  versioning_configuration {
+    status = "Enabled"
+  }
+}
+
+resource "aws_s3_bucket_server_side_encryption_configuration" "example" {
+  bucket = aws_s3_bucket.mi_data_v2.bucket
+
+  rule {
+    apply_server_side_encryption_by_default {
+      sse_algorithm     = "AES256"
+    }
+  }
+
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 
 resource "aws_s3_bucket_public_access_block" "mi_data_v2" {
