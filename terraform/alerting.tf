@@ -11,7 +11,13 @@ resource "aws_cloudwatch_metric_alarm" "mesh_inbox_message_count" {
   actions_enabled     = "true"
   alarm_actions       = [aws_sns_topic.mi_data_collector_alert.arn]
   treat_missing_data  = "breaching"
-  tags                = local.common_tags
+  tags = merge(
+    local.common_tags,
+    {
+      Name = "${var.environment}-mesh-inbox-message-count"
+      ApplicationRole = "AwsCloudwatchMetricAlarm"
+    }
+  )
 }
 resource "aws_cloudwatch_metric_alarm" "dead_letter_queue_message_count" {
   alarm_name          = "${var.environment}-dead-letter-queue-message-count"
@@ -25,7 +31,13 @@ resource "aws_cloudwatch_metric_alarm" "dead_letter_queue_message_count" {
   alarm_description   = "There are messages in the MI data notifications SQS dead letter queue."
   actions_enabled     = "true"
   alarm_actions       = [aws_sns_topic.mi_data_collector_alert.arn]
-  tags                = local.common_tags
+  tags = merge(
+    local.common_tags,
+    {
+      Name = "${var.environment}-dead-letter-queue-message-count"
+      ApplicationRole = "AwsCloudwatchMetricAlarm"
+    }
+  )
   dimensions = {
     QueueName = aws_sqs_queue.data_bucket_v2_notifications_deadletter.name
   }
@@ -43,7 +55,13 @@ resource "aws_cloudwatch_metric_alarm" "mesh_s3_forwarder_ecs_task_count" {
   actions_enabled     = "true"
   alarm_actions       = [aws_sns_topic.mi_data_collector_alert.arn]
   treat_missing_data  = "breaching"
-  tags                = local.common_tags
+  tags = merge(
+    local.common_tags,
+    {
+      Name = "${var.environment}-mesh-s3-forwarder-ecs-task-count"
+      ApplicationRole = "AwsCloudwatchMetricAlarm"
+    }
+  )
   dimensions = {
     ClusterName = aws_ecs_cluster.mi_data_collector.name
   }
@@ -54,7 +72,13 @@ resource "aws_lambda_function" "mi_data_collector_alert" {
   function_name = "${var.environment}-mi-data-collector-alert"
   role          = aws_iam_role.mi_data_collector_alert.arn
   handler       = "main.lambda_handler"
-  tags          = local.common_tags
+  tags = merge(
+    local.common_tags,
+    {
+      Name = "${var.environment}-mi-data-collector-alert"
+      ApplicationRole = "AwsLambdaFunction"
+    }
+  )
 
   source_code_hash = filebase64sha256(var.alert_lambda_zip)
 
@@ -112,5 +136,11 @@ resource "aws_sns_topic_subscription" "mi_data_collector_alert" {
 
 resource "aws_sns_topic" "mi_data_collector_alert" {
   name = "${var.environment}-mi-data-collector-alert"
-  tags = local.common_tags
+  tags = merge(
+    local.common_tags,
+    {
+      Name = "${var.environment}-mi-data-collector-alert"
+      ApplicationRole = "AwsSnsTopic"
+    }
+  )
 }

@@ -1,6 +1,12 @@
 resource "aws_ecs_cluster" "mi_data_collector" {
   name = "${var.environment}-registrations-mi-collector"
-  tags = local.common_tags
+  tags = merge(
+    local.common_tags,
+    {
+      Name = "${var.environment}-registrations-mi-collector"
+      ApplicationRole = "AwsEcsCluster"
+    }
+  )
   setting {
     name  = "containerInsights"
     value = "enabled"
@@ -17,6 +23,7 @@ resource "aws_cloudwatch_log_group" "mesh_s3_forwarder" {
     local.common_tags,
     {
       Name = "${var.environment}-mesh-s3-forwarder"
+      ApplicationRole = "AwsCloudwatchLogGroup"
     }
   )
   retention_in_days = var.log_retention_in_days
@@ -162,6 +169,7 @@ resource "aws_ecs_task_definition" "forwarder" {
     local.common_tags,
     {
       Name = "${var.environment}-mesh-s3-forwarder"
+      ApplicationRole = "AwsEcsTaskDefinition"
     }
   )
   execution_role_arn = aws_iam_role.ecs_execution.arn
@@ -192,6 +200,7 @@ resource "aws_security_group" "forwarder" {
     local.common_tags,
     {
       Name = "${var.environment}-mesh-s3-forwarder"
+      ApplicationRole = "AwsSecurityGroup"
     }
   )
 }

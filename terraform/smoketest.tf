@@ -8,7 +8,13 @@ resource "aws_lambda_function" "mesh_s3_forwarder_smoke_test" {
   function_name = "${var.environment}-mesh-s3-forwarder-smoke-test"
   role          = aws_iam_role.mesh_s3_forwarder_smoke_test.arn
   handler       = "main.send_mesh_message"
-  tags          = local.common_tags
+  tags = merge(
+    local.common_tags,
+    {
+      Name            = "${var.environment}-mesh-s3-forwarder-smoke-test"
+      ApplicationRole = "AwsLambdaFunction"
+    }
+  )
 
   source_code_hash = filebase64sha256(var.smoketest_lambda_zip)
 

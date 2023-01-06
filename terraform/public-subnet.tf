@@ -8,6 +8,7 @@ resource "aws_subnet" "public" {
     local.common_tags,
     {
       Name = "${var.environment}-registrations-mesh-public"
+      ApplicationRole = "AwsSubnet"
     }
   )
 
@@ -19,6 +20,7 @@ resource "aws_route_table" "public" {
     local.common_tags,
     {
       Name = "${var.environment}-registrations-mesh-public-routes"
+      ApplicationRole = "AwsRouteTable"
     }
   )
 }

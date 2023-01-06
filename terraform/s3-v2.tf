@@ -5,6 +5,7 @@ resource "aws_s3_bucket" "mi_data_v2" {
     local.common_tags,
     {
       Name = "${var.environment}-GP2GP-MI-data-v2"
+      ApplicationRole = "AwsS3Bucket"
     }
   )
 }
@@ -130,7 +131,13 @@ data "aws_iam_policy_document" "data_bucket_v2_notification_sns" {
 
 resource "aws_sns_topic" "data_bucket_v2_notifications" {
   name = "${aws_s3_bucket.mi_data_v2.bucket}-notifications"
-  tags = local.common_tags
+  tags = merge(
+    local.common_tags,
+    {
+      Name = "${aws_s3_bucket.mi_data_v2.bucket}-notifications"
+      ApplicationRole = "AwsSnsTopic"
+    }
+  )
 }
 
 resource "aws_sns_topic_policy" "data_bucket_v2_notifications" {
@@ -146,13 +153,25 @@ resource "aws_sqs_queue" "data_bucket_v2_notifications" {
     deadLetterTargetArn = aws_sqs_queue.data_bucket_v2_notifications_deadletter.arn
     maxReceiveCount     = 4
   })
-  tags = local.common_tags
+  tags = merge(
+    local.common_tags,
+    {
+      Name = "${aws_s3_bucket.mi_data_v2.bucket}-notifications"
+      ApplicationRole = "AwsSqsQueue"
+    }
+  )
 }
 
 resource "aws_sqs_queue" "data_bucket_v2_notifications_deadletter" {
   name                      = "${aws_s3_bucket.mi_data_v2.bucket}-notifications-deadletter"
   message_retention_seconds = 1209600
-  tags                      = local.common_tags
+  tags = merge(
+    local.common_tags,
+    {
+      Name            = "${aws_s3_bucket.mi_data_v2.bucket}-notifications-deadletter"
+      ApplicationRole = "AwsSqsQueue"
+    }
+  )
 }
 
 resource "aws_sqs_queue_policy" "data_bucket_v2_notifications" {

@@ -5,6 +5,7 @@ resource "aws_vpc" "vpc" {
     local.common_tags,
     {
       Name = "${var.environment}-registrations-mesh-vpc"
+      ApplicationRole = "AwsVpc"
     }
   )
 }
@@ -16,6 +17,7 @@ resource "aws_internet_gateway" "internet_gateway" {
     local.common_tags,
     {
       Name = "${var.environment}-registrations-mesh-gateway"
+      ApplicationRole = "AwsInternetGateway"
     }
   )
 

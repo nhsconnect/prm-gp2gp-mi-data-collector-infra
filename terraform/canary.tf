@@ -73,7 +73,13 @@ resource "aws_cloudwatch_event_rule" "run_daily" {
   description = "Trigger MI Data Canary"
 
   schedule_expression = "cron(0 10 * * ? *)"
-  tags                = local.common_tags
+  tags = merge(
+    local.common_tags,
+    {
+      Name = "${var.environment}-mi-data-collector-canary"
+      ApplicationRole = "AwsCloudwatchEventRule"
+    }
+  )
 }
 
 resource "aws_cloudwatch_event_target" "mi_data_collector_canary" {
